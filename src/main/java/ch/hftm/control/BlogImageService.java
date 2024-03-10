@@ -5,11 +5,12 @@ import ch.hftm.entity.Image;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Dependent
@@ -42,6 +43,27 @@ public class BlogImageService {
             blog.addImage(image);
             imageRepository.persist(image);
             blogRepository.persist(blog);
+        }
+    }
+
+    @Transactional
+    public void deleteImage(long blogId, String fileName) {
+        Blog blog = blogRepository.findById(blogId);
+        if (blog != null) {
+            for (Image image : blog.getImages()) {
+                String imagePath = image.getPath();
+                String imageName = new File(imagePath).getName();
+                if (imageName.equals(fileName)) {
+                    try {
+                        Path imageFilePath = Paths.get(imagePath);
+                        Files.deleteIfExists(imageFilePath);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    blog.getImages().remove(image);
+                    break;
+                }
+            }
         }
     }
 }

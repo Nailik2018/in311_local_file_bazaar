@@ -14,15 +14,27 @@ import java.io.InputStream;
 public class BlogImageResource {
 
     @Inject
-    BlogImageService image;
+    BlogImageService blogImageService;
 
     @POST
     @Path("{id}/images")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     public Response addImageToBlog(@PathParam("id") Long id, @QueryParam("fileName") String fileName, InputStream imageStream) {
         try {
-            image.addImage(id, imageStream, fileName);
+            blogImageService.addImage(id, imageStream, fileName);
             return Response.status(Response.Status.CREATED).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DELETE
+    @Path("{blogId}/images/{fileName}")
+    public Response deleteImageFromBlog(@PathParam("blogId") Long blogId, @PathParam("fileName") String fileName) {
+        try {
+            blogImageService.deleteImage(blogId, fileName);
+            return Response.status(Response.Status.NO_CONTENT).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
