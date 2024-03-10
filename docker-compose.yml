@@ -1,8 +1,8 @@
 version: "3.8"
 services:
-  in311_local_file_bazaar_mysql:
-    image: mysql:latest
-    container_name: in311_local_file_bazaar_mysql
+  local_file_bazaar:
+    image: mysql:8.0.34
+    container_name: mysql_container
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: secret
@@ -15,9 +15,10 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     restart: unless-stopped
+    container_name: phpmyadmin_container
     environment:
-      PMA_HOST: in311_local_file_bazaar_phpmyadmin
+      PMA_HOST: local_file_bazaar
     depends_on:
-      - in311_local_file_bazaar_mysql
+      - local_file_bazaar
     ports:
       - "8080:80"
