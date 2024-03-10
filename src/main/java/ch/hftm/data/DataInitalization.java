@@ -73,7 +73,7 @@ public class DataInitalization {
 
         Blog myanmar = new Blog();
         myanmar.setTitle("Myanmar");
-        thailand.setContent("Bagan und Mandalay.");
+        myanmar.setContent("Bagan und Mandalay.");
 
         Blog laos = new Blog();
         laos.setTitle("Laos");
