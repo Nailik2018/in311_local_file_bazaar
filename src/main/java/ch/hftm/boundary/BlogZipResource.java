@@ -6,14 +6,10 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 import java.util.zip.ZipOutputStream;
 
 @Tag(name = "Blog Zip REST API")
@@ -34,15 +30,35 @@ public class BlogZipResource {
     public Response uploadBlogZip(InputStream fileInputStream) {
         try {
             java.nio.file.Path uploadDirPath = Paths.get(appConfig.getZipUploadDir());
+            java.nio.file.Path extractDirPath = Paths.get(appConfig.getZipExtractDir());
             // Falls das Verzeichnis nicht existiert, wird es erstellt
             if (!Files.exists(uploadDirPath)) {
                 Files.createDirectories(uploadDirPath);
             }
+            if (!Files.exists(extractDirPath)) {
+                Files.createDirectories(extractDirPath);
+            }
+
+            // Zip-File speichern ist aktuell noch irgendwie fehlerhaft deshalb blog.zip noch statisch kopiert für Entwicklung
             String filename = "uploadBlog.zip";
             String uploadedFilePath = uploadDirPath.resolve(filename).toString();
+            System.out.println("uploadedFilePath: " + uploadedFilePath);
             Files.copy(fileInputStream, Paths.get(uploadedFilePath), StandardCopyOption.REPLACE_EXISTING);
-            Files.deleteIfExists(Paths.get(uploadedFilePath));
-            return Response.ok("Blog ZIP erfolgreich").build();
+
+            // Entpacken des ZIP-Files Test da uploadBlog.zip noch nicht funktioniert
+            String filenameBlog = "blog.zip";
+            String uploadedFilePath2 = uploadDirPath.resolve(filenameBlog).toString();
+            String extractFilePath = extractDirPath.resolve(filenameBlog).toString();
+            Files.copy(Paths.get(uploadedFilePath2), Paths.get(extractFilePath), StandardCopyOption.REPLACE_EXISTING);
+
+            fileHelper.unzipFile(extractFilePath, extractDirPath);
+            fileHelper.saveBlog(extractDirPath.resolve("blog.json"));
+            Files.walk(extractDirPath)
+                    .filter(path -> !path.equals(extractDirPath))
+                    .map(java.nio.file.Path::toFile)
+                    .forEach(File::delete);
+
+            return Response.ok("Blog ZIP erfolgreich hochgeladen").build();
         } catch (IOException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

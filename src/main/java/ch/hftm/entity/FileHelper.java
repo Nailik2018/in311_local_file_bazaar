@@ -6,13 +6,17 @@ import jakarta.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.json.JSONObject;
 
 @ApplicationScoped
 public class FileHelper {
@@ -70,6 +74,36 @@ public class FileHelper {
                     zipOutputStream.closeEntry();
                 }
             }
+        }
+    }
+
+    public void unzipFile(String zipFilePath, java.nio.file.Path destDir) throws IOException {
+        try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(java.nio.file.Paths.get(zipFilePath)))) {
+            ZipEntry entry;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                java.nio.file.Path entryPath = destDir.resolve(entry.getName());
+                if (!entry.isDirectory()) {
+                    Files.createDirectories(entryPath.getParent());
+                    Files.copy(zipInputStream, entryPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+                zipInputStream.closeEntry();
+            }
+        }
+    }
+
+    public void saveBlog(java.nio.file.Path jsonFilePath) throws IOException {
+        if (Files.exists(jsonFilePath)) {
+            System.out.println("Blog.json:");
+            for (String line : Files.readAllLines(jsonFilePath)) {
+                JSONObject jsonObject = new JSONObject(line);
+                String title = jsonObject.get("title").toString();
+                String content = jsonObject.get("content").toString();
+                Blog blog = new Blog(title, content);
+                blogService.create(blog);
+                System.out.println(line);
+            }
+        } else {
+            System.out.println("blog.json konnte nicht gefunden werden.");
         }
     }
 }
