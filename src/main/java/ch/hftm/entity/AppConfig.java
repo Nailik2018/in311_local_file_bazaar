@@ -13,6 +13,9 @@ public class AppConfig {
     @ConfigProperty(name = "ZIP_UPLOAD_DIR")
     String zipUploadDir;
 
+    @ConfigProperty(name = "ZIP_EXTRACT_DIR")
+    String zipExtractDir;
+
     public String getUploadDir() {
         return uploadDir;
     }
@@ -23,5 +26,9 @@ public class AppConfig {
 
     public String getZipUploadDir() {
         return zipUploadDir;
+    }
+
+    public String getZipExtractDir() {
+        return zipExtractDir;
     }
 }
