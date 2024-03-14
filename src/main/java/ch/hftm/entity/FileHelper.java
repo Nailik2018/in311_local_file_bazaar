@@ -16,6 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import org.json.JSONObject;
 
 @ApplicationScoped
@@ -91,7 +92,8 @@ public class FileHelper {
         }
     }
 
-    public void saveBlog(java.nio.file.Path jsonFilePath) throws IOException {
+    @Transactional
+    public long saveBlog(java.nio.file.Path jsonFilePath) throws IOException {
         if (Files.exists(jsonFilePath)) {
             System.out.println("Blog.json:");
             for (String line : Files.readAllLines(jsonFilePath)) {
@@ -101,9 +103,12 @@ public class FileHelper {
                 Blog blog = new Blog(title, content);
                 blogService.create(blog);
                 System.out.println(line);
+                System.out.println("blogId: " + blog.getId());
+                return blog.getId();
             }
         } else {
             System.out.println("blog.json konnte nicht gefunden werden.");
         }
+        return 0;
     }
 }

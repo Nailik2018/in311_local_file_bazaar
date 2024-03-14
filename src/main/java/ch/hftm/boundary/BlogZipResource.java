@@ -52,12 +52,16 @@ public class BlogZipResource {
             Files.copy(Paths.get(uploadedFilePath2), Paths.get(extractFilePath), StandardCopyOption.REPLACE_EXISTING);
 
             fileHelper.unzipFile(extractFilePath, extractDirPath);
-            fileHelper.saveBlog(extractDirPath.resolve("blog.json"));
-            Files.walk(extractDirPath)
-                    .filter(path -> !path.equals(extractDirPath))
-                    .map(java.nio.file.Path::toFile)
-                    .forEach(File::delete);
-
+            long blogId = fileHelper.saveBlog(extractDirPath.resolve("blog.json"));
+            if(blogId > 0){
+                // save image
+                java.nio.file.Path imageBlogPath = Paths.get(appConfig.getUploadDir());
+//                fileHelper.saveImage(extractDirPath, blogId);
+            }
+//            Files.walk(extractDirPath)
+//                    .filter(path -> !path.equals(extractDirPath))
+//                    .map(java.nio.file.Path::toFile)
+//                    .forEach(File::delete);
             return Response.ok("Blog ZIP erfolgreich hochgeladen").build();
         } catch (IOException e) {
             e.printStackTrace();
