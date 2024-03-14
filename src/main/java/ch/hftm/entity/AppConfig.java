@@ -10,11 +10,18 @@ public class AppConfig {
     @ConfigProperty(name = "ZIP_DIR")
     String zipDir;
 
+    @ConfigProperty(name = "ZIP_UPLOAD_DIR")
+    String zipUploadDir;
+
     public String getUploadDir() {
         return uploadDir;
     }
 
     public String getZipDir() {
         return zipDir;
+    }
+
+    public String getZipUploadDir() {
+        return zipUploadDir;
     }
 }

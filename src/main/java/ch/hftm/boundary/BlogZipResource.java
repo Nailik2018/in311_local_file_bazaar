@@ -9,8 +9,11 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 import java.util.zip.ZipOutputStream;
 
 @Tag(name = "Blog Zip REST API")
@@ -24,6 +27,27 @@ public class BlogZipResource {
 
     @Inject
     FileHelper fileHelper;
+
+    @POST
+    @Path("/uploadBlogZip")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadBlogZip(InputStream fileInputStream) {
+        try {
+            java.nio.file.Path uploadDirPath = Paths.get(appConfig.getZipUploadDir());
+            // Falls das Verzeichnis nicht existiert, wird es erstellt
+            if (!Files.exists(uploadDirPath)) {
+                Files.createDirectories(uploadDirPath);
+            }
+            String filename = "uploadBlog.zip";
+            String uploadedFilePath = uploadDirPath.resolve(filename).toString();
+            Files.copy(fileInputStream, Paths.get(uploadedFilePath), StandardCopyOption.REPLACE_EXISTING);
+            Files.deleteIfExists(Paths.get(uploadedFilePath));
+            return Response.ok("Blog ZIP erfolgreich").build();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @GET
     @Path("/backupAndDownloadZip/{blogId}")
