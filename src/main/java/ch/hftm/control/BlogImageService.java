@@ -47,6 +47,11 @@ public class BlogImageService {
     }
 
     @Transactional
+    public void create(Image image){
+        imageRepository.persist(image);
+    }
+
+    @Transactional
     public void deleteImage(long blogId, String fileName) {
         Blog blog = blogRepository.findById(blogId);
         if (blog != null) {

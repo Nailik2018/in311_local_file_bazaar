@@ -1,4 +1,5 @@
 package ch.hftm.entity;
+import ch.hftm.control.BlogImageService;
 import ch.hftm.control.BlogService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +27,12 @@ public class FileHelper {
 
     @Inject
     BlogService blogService;
+
+    @Inject
+    AppConfig appConfig;
+
+    @Inject
+    BlogImageService blogImageService;
 
     public String generateJsonData(Long blogId) {
         if (blogService == null) {
@@ -110,5 +119,34 @@ public class FileHelper {
             System.out.println("blog.json konnte nicht gefunden werden.");
         }
         return 0;
+    }
+
+    public void saveImage(Path extractDirPath, Long blogId) throws IOException {
+        // Verzeichnis für Bilder des Blogs erstellen
+        Path blogImagesDir = Paths.get(appConfig.getUploadDir() + blogId.toString());
+        if (!Files.exists(blogImagesDir)) {
+            Files.createDirectories(blogImagesDir);
+        }
+
+        // Bilder aus Blogs zip in das Images Blog-Verzeichnis verschieben
+        Files.list(extractDirPath)
+                .filter(imagePath -> Files.isRegularFile(imagePath) && isImageFile(imagePath)) // Nur Bilder
+                .forEach(imagePath -> {
+                    try {
+                        Files.move(imagePath, blogImagesDir.resolve(imagePath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+                        System.out.println("Image moved: " + imagePath.getFileName());
+                        Image image = new Image();
+                        image.setPath(blogImagesDir.resolve(imagePath.getFileName()).toString());
+                        image.setBlog(blogService.getById(blogId));
+                        blogImageService.create(image);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    private boolean isImageFile(Path filePath) {
+        String fileName = filePath.getFileName().toString().toLowerCase();
+        return fileName.endsWith(".png") || fileName.endsWith(".jpg");
     }
 }
