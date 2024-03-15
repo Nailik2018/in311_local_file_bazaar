@@ -5,6 +5,9 @@
 docker-compose up -d
 ```
 ### environemnt Datei erstellen
+```
+Siehe .env.example Pfad anpassen für Pfade und .env daraus machen
+```
 ## Projekt starten
 ### Start dev
 ```bash
