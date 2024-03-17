@@ -41,7 +41,16 @@ nb-configuration.xml
 
 # Plugin directory
 /.quarkus/cli/plugins/
-dev/images/blogs/18/*
-!dev/images/blogs/gitkeep
+dev/zips/blogs/*
+!dev/zips/blogs/.gitkeep
+
+dev/zips/extract/*
+!dev/zips/extract/.gitkeep
+
+dev/zips/uploads/*
+!dev/zips/uploads/.gitkeep
+
+dev/images/blogs/*
+!dev/images/blogs/.gitkeep
 
 src/main/java/ch/hftm/entity/EnvironmentFile.class
