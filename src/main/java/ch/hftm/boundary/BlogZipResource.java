@@ -26,7 +26,7 @@ public class BlogZipResource {
 
     @POST
     @Path("/uploadBlogZip")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     public Response uploadBlogZip(InputStream fileInputStream) {
         try {
             java.nio.file.Path uploadDirPath = Paths.get(appConfig.getZipUploadDir());
@@ -42,26 +42,30 @@ public class BlogZipResource {
             // Zip-File speichern ist aktuell noch irgendwie fehlerhaft deshalb blog.zip noch statisch kopiert für Entwicklung
             String filename = "uploadBlog.zip";
             String uploadedFilePath = uploadDirPath.resolve(filename).toString();
+            String extractFilePath = extractDirPath.resolve(filename).toString();
             System.out.println("uploadedFilePath: " + uploadedFilePath);
             Files.copy(fileInputStream, Paths.get(uploadedFilePath), StandardCopyOption.REPLACE_EXISTING);
+            fileHelper.unzipFile(uploadedFilePath, extractDirPath);
+//            fileHelper.unzipFile(extractFilePath, extractDirPath);
+
 
             // Entpacken des ZIP-Files Test da uploadBlog.zip noch nicht funktioniert
 //            String filenameBlog = "blog.zip";
-            String filenameBlog = "chinaBlog.zip";
-            String uploadedFilePath2 = uploadDirPath.resolve(filenameBlog).toString();
-            String extractFilePath = extractDirPath.resolve(filenameBlog).toString();
-            Files.copy(Paths.get(uploadedFilePath2), Paths.get(extractFilePath), StandardCopyOption.REPLACE_EXISTING);
+//            String filenameBlog2 = "chinaBlog.zip";
+//            String uploadedFilePath2 = uploadDirPath.resolve(filenameBlog2).toString();
+//            String extractFilePath2 = extractDirPath.resolve(filenameBlog2).toString();
+//            Files.copy(Paths.get(uploadedFilePath2), Paths.get(extractFilePath2), StandardCopyOption.REPLACE_EXISTING);
+//            fileHelper.unzipFile(extractFilePath2, extractDirPath);
 
-            fileHelper.unzipFile(extractFilePath, extractDirPath);
             long blogId = fileHelper.saveBlog(extractDirPath.resolve("blog.json"));
             if(blogId > 0){
                 java.nio.file.Path imageBlogPath = Paths.get(appConfig.getUploadDir());
                 fileHelper.saveImage(extractDirPath, blogId);
             }
-            Files.walk(extractDirPath)
-                    .filter(path -> !path.equals(extractDirPath))
-                    .map(java.nio.file.Path::toFile)
-                    .forEach(File::delete);
+//            Files.walk(extractDirPath)
+//                    .filter(path -> !path.equals(extractDirPath))
+//                    .map(java.nio.file.Path::toFile)
+//                    .forEach(File::delete);
             return Response.ok("Blog ZIP erfolgreich hochgeladen").build();
         } catch (IOException e) {
             e.printStackTrace();
