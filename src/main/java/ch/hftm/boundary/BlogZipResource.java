@@ -39,7 +39,7 @@ public class BlogZipResource {
                 Files.createDirectories(extractDirPath);
             }
 
-            // Zip-File speichern ist aktuell noch irgendwie fehlerhaft deshalb blog.zip noch statisch kopiert für Entwicklung
+            // Aktuell nur 1 Bild möglich (muss noch angepasst werden)
             String filename = "uploadBlog.zip";
             String uploadedFilePath = uploadDirPath.resolve(filename).toString();
             String extractFilePath = extractDirPath.resolve(filename).toString();
@@ -48,24 +48,15 @@ public class BlogZipResource {
             fileHelper.unzipFile(uploadedFilePath, extractDirPath);
 //            fileHelper.unzipFile(extractFilePath, extractDirPath);
 
-
-            // Entpacken des ZIP-Files Test da uploadBlog.zip noch nicht funktioniert
-//            String filenameBlog = "blog.zip";
-//            String filenameBlog2 = "chinaBlog.zip";
-//            String uploadedFilePath2 = uploadDirPath.resolve(filenameBlog2).toString();
-//            String extractFilePath2 = extractDirPath.resolve(filenameBlog2).toString();
-//            Files.copy(Paths.get(uploadedFilePath2), Paths.get(extractFilePath2), StandardCopyOption.REPLACE_EXISTING);
-//            fileHelper.unzipFile(extractFilePath2, extractDirPath);
-
             long blogId = fileHelper.saveBlog(extractDirPath.resolve("blog.json"));
             if(blogId > 0){
                 java.nio.file.Path imageBlogPath = Paths.get(appConfig.getUploadDir());
                 fileHelper.saveImage(extractDirPath, blogId);
             }
-//            Files.walk(extractDirPath)
-//                    .filter(path -> !path.equals(extractDirPath))
-//                    .map(java.nio.file.Path::toFile)
-//                    .forEach(File::delete);
+            Files.walk(extractDirPath)
+                    .filter(path -> !path.equals(extractDirPath))
+                    .map(java.nio.file.Path::toFile)
+                    .forEach(File::delete);
             return Response.ok("Blog ZIP erfolgreich hochgeladen").build();
         } catch (IOException e) {
             e.printStackTrace();
