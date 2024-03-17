@@ -4,10 +4,11 @@
 ``` bash
 docker-compose up -d
 ```
-### environemnt Datei erstellen
+### .env Datei erstellen
+```bash
+java -cp target/classes ch.hftm.entity.EnvironmentFile
 ```
-Siehe .env.example Pfad anpassen für Pfade und .env daraus machen
-```
+
 ## Projekt starten
 ### Start dev
 ```bash
