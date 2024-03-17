@@ -7,6 +7,9 @@ docker-compose up -d
 ### .env Datei erstellen
 ```bash
 javac ./src/main/java/ch/hftm/entity/EnvironmentFile.java
+```
+
+```bash
 java -cp ./src/main/java ch.hftm.entity.EnvironmentFile
 ```
 

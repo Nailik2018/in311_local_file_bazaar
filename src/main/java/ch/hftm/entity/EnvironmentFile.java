@@ -28,6 +28,7 @@ public class EnvironmentFile {
 
         // Ein Verzeichnis zurück zum root Verzeichnis des Projektes
         String parentDir = new File(currentDir).getParent();
+        parentDir = new File(parentDir).getParent(); // ausserhalb src
         System.out.println("Oberverzeichnis: " + parentDir);
 
         File envDir = new File(parentDir);
