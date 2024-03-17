@@ -43,3 +43,5 @@ nb-configuration.xml
 /.quarkus/cli/plugins/
 dev/images/blogs/18/*
 !dev/images/blogs/gitkeep
+
+src/main/java/ch/hftm/entity/EnvironmentFile.class
