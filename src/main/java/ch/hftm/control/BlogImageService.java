@@ -1,5 +1,5 @@
 package ch.hftm.control;
-import ch.hftm.entity.AppConfig;
+import ch.hftm.config.AppConfig;
 import ch.hftm.entity.Blog;
 import ch.hftm.entity.Image;
 import jakarta.enterprise.context.Dependent;

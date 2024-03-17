@@ -1,4 +1,5 @@
 package ch.hftm.entity;
+import ch.hftm.config.AppConfig;
 import ch.hftm.control.BlogImageService;
 import ch.hftm.control.BlogService;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,4 +1,4 @@
-package ch.hftm.entity;
+package ch.hftm.config;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 

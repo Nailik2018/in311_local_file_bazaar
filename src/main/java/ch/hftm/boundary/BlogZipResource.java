@@ -1,5 +1,5 @@
 package ch.hftm.boundary;
-import ch.hftm.entity.AppConfig;
+import ch.hftm.config.AppConfig;
 import ch.hftm.entity.FileHelper;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
