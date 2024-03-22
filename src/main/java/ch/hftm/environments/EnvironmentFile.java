@@ -1,4 +1,4 @@
-package ch.hftm.entity;
+package ch.hftm.environments;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -19,24 +19,8 @@ public class EnvironmentFile {
     }
 
     public void createEnvFile() throws IOException {
-        String currentFilePath = EnvironmentFile.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        String currentDir = new File(currentFilePath).getParent();
-        System.out.println("Aktuelles Verzeichnis: " + currentDir);
-
-        currentDir = currentDir.replace("%20", " ");
-        System.out.println("Dekodiertes Verzeichnis: " + currentDir);
-
-        // Ein Verzeichnis zurück zum root Verzeichnis des Projektes
-        String parentDir = new File(currentDir).getParent();
-        parentDir = new File(parentDir).getParent(); // ausserhalb src
-        System.out.println("Oberverzeichnis: " + parentDir);
-
-        File envDir = new File(parentDir);
-        if (!envDir.exists()) {
-            System.err.println("Verzeichnis existiert nicht: " + parentDir);
-            return;
-        }
-
+        String parentDir = System.getProperty("user.dir");
+        System.out.println("Root-Verzeichnis des Projekts: " + parentDir);
         File envFile = new File(parentDir + "/.env");
         if (!envFile.exists()) {
             boolean created = envFile.createNewFile();
@@ -50,9 +34,17 @@ public class EnvironmentFile {
             System.out.println("Datei existiert bereits.");
             return;
         }
-
         parentDir = parentDir.replace("\\", "/");
+        String envSettings = setEnvironmentVariables(parentDir);
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(envFile))) {
+            bufferedWriter.write(envSettings);
+            System.out.println("env Einstellungen geschrieben.");
+        } catch (IOException e) {
+            System.err.println("env Einstellungen schreiben fehlgeschlagen: " + e.getMessage());
+        }
+    }
 
+    private String setEnvironmentVariables(String parentDir){
         // Image Verzeichnis
         String sectionNameImageDir = "IMAGE_DIR=";
         String imageDir = parentDir + "/dev/images/blogs/";
@@ -69,17 +61,10 @@ public class EnvironmentFile {
         String sectionNameZipExtractDir = "ZIP_EXTRACT_DIR=";
         String zipExtractDir = parentDir + "/dev/zips/extract/";
 
-        // .env Setzen
         String envSettings = sectionNameImageDir + imageDir + "\n";
         envSettings += sectionNameZipDir + zipDir + "\n";
         envSettings += sectionNameZipUploadDir + zipUploadDir + "\n";
         envSettings += sectionNameZipExtractDir + zipExtractDir + "\n";
-
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(envFile))) {
-            bufferedWriter.write(envSettings);
-            System.out.println("env Einstellungen geschrieben.");
-        } catch (IOException e) {
-            System.err.println("env Einstellungen schreiben fehlgeschlagen: " + e.getMessage());
-        }
+        return envSettings;
     }
 }

@@ -12,15 +12,10 @@ Docker version 24.0.6, build ed223bc
 ``` bash
 docker-compose up -d
 ```
-### .env Datei erstellen
+### .env Datei erstellen (neu nicht in Video vorhanden)
 ```bash
-javac ./src/main/java/ch/hftm/entity/EnvironmentFile.java
+java ./src/main/java/ch/hftm/environments/EnvironmentFile.java
 ```
-
-```bash
-java -cp ./src/main/java ch.hftm.entity.EnvironmentFile
-```
-
 ## Projekt starten
 ### Start dev
 ```bash
